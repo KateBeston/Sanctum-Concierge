@@ -1224,7 +1224,8 @@ document.querySelectorAll('.navgo').forEach(function(a){
         body:JSON.stringify({name:name,email:email,phone:phone,role:role,fields:fields,token:token})})
         .then(function(r){return r.json().catch(function(){return {};}).then(function(d){return {ok:r.ok&&d.ok,d:d};});})
         .then(function(res){
-          if(res.ok){ f.reset(); if(window.turnstile){try{turnstile.reset();}catch(e){}} window.showConfirm('enquiry'); }
+          if(res.ok){ f.reset(); if(window.turnstile){try{turnstile.reset();}catch(e){}} window.showConfirm('enquiry');
+            try{ if(window.gtag && document.cookie.indexOf('sc_consent=all')>-1){ gtag('event','generate_lead',{method:'concierge_enquiry',enquiry_role:role||'unspecified'}); } }catch(e){} }
           else { alert((res.d&&res.d.error)||'Sorry, something went wrong sending your enquiry. Please try again.'); }
         })
         .catch(function(){ alert('Network error. Please check your connection and try again.'); })
