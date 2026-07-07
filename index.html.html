@@ -876,6 +876,21 @@ window.initGooglePlaces = function(){
 window.googleTranslateElementInit = function(){
   new google.translate.TranslateElement({ pageLanguage: 'en', autoDisplay: false }, 'google_translate_element');
 };
+/* Belt-and-braces: Google's translate script can re-show its own banner and re-shift the
+   page down after our CSS has already loaded. This watcher actively forces both back to
+   closed/zero the instant it detects them, rather than relying on CSS alone. */
+(function(){
+  function forceHide(){
+    document.body.style.top = '0px';
+    document.documentElement.style.top = '0px';
+    var frame = document.querySelector('.goog-te-banner-frame');
+    if(frame) frame.style.display = 'none';
+  }
+  var obs = new MutationObserver(forceHide);
+  obs.observe(document.body, { attributes:true, attributeFilter:['style'], subtree:false });
+  obs.observe(document.documentElement, { attributes:true, attributeFilter:['style'], subtree:false });
+  setInterval(forceHide, 500);   // extra safety net, cheap enough to run indefinitely
+})();
 document.querySelectorAll('.lang-select').forEach(function(sel){
   sel.addEventListener('change', function(){
     var lang = this.value;
